@@ -1,6 +1,28 @@
-# Documentação REST API - Sistema de Reserva e Comparação de Hotéis
+<p align="center">
+<img src="https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54"/>
+<img src="https://img.shields.io/badge/flask-000000?style=for-the-badge&logo=flask&logoColor=white"/>
+<img src="https://img.shields.io/badge/SQLAlchemy-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white"/>
+<img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white"/>
+<img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=d63aff"/>
+<img src="https://img.shields.io/badge/Mailgun-F83600?style=for-the-badge&logo=mailgun&logoColor=white"/>
+<img src="https://img.shields.io/badge/git-F05033?style=for-the-badge&logo=git&logoColor=white"/>
+</p>
 
-Esta documentação descreve os recursos disponíveis na REST API de Reserva e Comparação de Hotéis, incluindo exemplos de requisições e suas possíveis respostas.
+<br>
+
+<p align="center">
+  <img height="100px" src="./utils/logo.png">
+</p>
+
+<br><br>
+
+# API RESTful de Catálogo de Hotéis
+
+
+
+Este projeto é uma API RESTful robusta desenvolvida em Python, focada na construção de um backend para um sistema de catálogo e reserva de hotéis.
+
+A aplicação utiliza o ecossistema Flask (Flask-RESTful, Flask-SQLAlchemy) para criar endpoints seguros e eficientes para gerenciamento de hotéis, usuários e sites. É um projeto prático que demonstra conceitos essenciais de desenvolvimento backend.
 
 ## Índice
 
@@ -17,6 +39,17 @@ Esta documentação descreve os recursos disponíveis na REST API de Reserva e C
 11. [Gerenciar Sites](#11-gerenciar-sites)
 
 ---
+
+## Principais Funcionalidades
+
+* **Autenticação Segura:** Sistema completo de login, cadastro e logout usando **Flask-JWT-Extended**, incluindo *blocklisting* (antiga blacklist) de tokens.
+* **Confirmação de E-mail:** Integração com a API da **Mailgun** para envio de e-mails de confirmação de cadastro de novos usuários.
+* **CRUD Completo:** Operações de Criar, Ler, Atualizar e Deletar para múltiplos recursos (Hotéis, Usuários, Sites).
+* **Filtros Dinâmicos:** Endpoint de busca de hotéis com filtros avançados por cidade, faixa de estrelas e faixa de diária, usando consultas SQL parametrizadas.
+* **Persistência de Dados:** Uso do ORM **SQLAlchemy** para mapeamento objeto-relacional, com configuração adaptada de MySQL para **SQLite** local.
+
+---
+
 
 ## 1. Consultar Hotéis
 
@@ -848,6 +881,44 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
 ```
 
 ---
+
+## 📸 Ambiente de Desenvolvimento e Testes
+
+Para garantir um processo de desenvolvimento eficiente e facilitar a compreensão da estrutura do projeto, utilizamos as seguintes ferramentas:
+
+### Visual Studio Code (VS Code)
+
+Nosso principal ambiente de desenvolvimento integrado (IDE), configurado para Python e com extensões que otimizam a produtividade, depuração e organização do código.
+
+<p align="center">
+  <img src="utils/vs_code.png" alt="Screenshot do VS Code com o projeto">
+  <br>
+  <sub>Uma visão do projeto no VS Code, destacando a estrutura de arquivos e um trecho de código.</sub>
+</p>
+
+### Apidog (Ferramenta de Testes de API)
+
+Utilizamos o Apidog para testar e documentar os endpoints da API. Ele permite o envio de requisições HTTP (GET, POST, PUT, DELETE), visualização das respostas e gerenciamento de autenticação, agilizando o desenvolvimento e a validação das funcionalidades.
+
+#### Confirmação de Usuário Cadastrado
+
+<p align="center">
+  <img src="utils/apidog_confimar.png" alt="Screenshot do Apidog testando a rota de confirmação de usuário">
+  <br>
+  <sub>Exemplo de requisição para confirmar o cadastro de um usuário.</sub>
+</p>
+
+#### Listagem de Sites Cadastrados
+
+<p align="center">
+  <img src="utils/apidog_lista_sites.png" alt="Screenshot do Apidog testando a rota de listagem de sites">
+  <br>
+  <sub>Exemplo de requisição GET para listar todos os sites registrados na API.</sub>
+</p>
+
+
+---
+
 
 ## Observações Importantes
 
