@@ -1,0 +1,66 @@
+# --- Python ---
+# Byte-code compilado e caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Arquivos de build e distribuição
+build/
+dist/
+*.egg-info/
+sdist/
+*.spec
+wheelhouse/
+
+# --- Ambientes Virtuais ---
+# Nomes comuns para pastas de ambiente virtual
+venv/
+.venv/
+env/
+.env/
+env.bak/
+venv.bak/
+
+# --- Segredos (MUITO IMPORTANTE) ---
+# Nunca comite arquivos de configuração com senhas ou chaves de API
+.env
+*.env
+config.ini
+secrets.toml
+
+# --- Banco de Dados Local (SQLITE) ---
+# Ignore o arquivo do banco de dados de desenvolvimento/teste
+# Você não quer que dados de teste locais sejam enviados ao repositório
+banco.db
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Arquivos de IDE e Editores ---
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# --- Arquivos de Sistema Operacional ---
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# --- Logs ---
+*.log
+logs/

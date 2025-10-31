@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Flask - Status</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 2rem;
+        }
+        
+        .hero-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            padding: 3rem 2rem;
+        }
+        
+        .status-badge {
+            background: var(--success-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pulse-dot {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .endpoint-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .endpoint-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s ease;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .endpoint-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .endpoint-header {
+            cursor: pointer;
+        }
+        
+        .endpoint-item:last-child {
+            border-bottom: none;
+        }
+        
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .endpoint-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .method-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 1rem;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .method-get {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .method-post {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .method-put {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .method-delete {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .endpoint-details {
+            display: none;
+            margin-top: 1rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .endpoint-details.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .test-form {
+            margin-top: 1rem;
+        }
+        
+        .test-form .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .test-form label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .test-form input,
+        .test-form textarea,
+        .test-form select {
+            border-radius: 6px;
+            border: 2px solid #e0e0e0;
+            transition: border-color 0.3s ease;
+        }
+        
+        .test-form input:focus,
+        .test-form textarea:focus,
+        .test-form select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .response-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .response-box pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .endpoint-category {
+            margin-bottom: 2rem;
+        }
+
+        .endpoint-category h5 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .expand-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .expand-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .btn-test {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            transition: transform 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .btn-test:hover {
+            transform: scale(1.05);
+            color: white;
+        }
+
+        .alert-custom {
+            border-radius: 8px;
+            border: none;
+        }
+
+        .token-display {
+            background: #f8f9fa;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            position: relative;
+            display: none;
+        }
+
+        .token-display pre {
+            margin: 0;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            font-size: 0.85rem;
+            color: #333;
+        }
+
+        .copy-token-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .copy-token-btn:hover {
+            background: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .copy-token-btn.copied {
+            background: var(--success-color);
+        }
+
+        .auto-fill-notice {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .auto-fill-notice i {
+            color: #4caf50;
+            margin-right: 0.5rem;
+        }
+        
+        .footer-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .quick-test-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .auth-notice {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .auth-notice i {
+            color: #856404;
+            margin-right: 0.5rem;
+        }
+
+        .backend-note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Shapes flutuantes de fundo -->
+    <div class="floating-shapes">
+        <div class="shape" style="width: 100px; height: 100px; top: 10%; left: 10%; animation: float 6s ease-in-out infinite;"></div>
+        <div class="shape" style="width: 150px; height: 150px; top: 60%; right: 10%; animation: float 8s ease-in-out infinite reverse;"></div>
+        <div class="shape" style="width: 80px; height: 80px; bottom: 20%; left: 20%; animation: float 7s ease-in-out infinite 2s;"></div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="hero-section animate__animated animate__fadeIn">
+                    <!-- Cabeçalho -->
+                    <div class="text-center mb-5">
+                        <div class="status-badge animate__animated animate__pulse animate__infinite">
+                            <span class="pulse-dot"></span>
+                            {{ info.status|upper }}
+                        </div>
+                        <h1 class="display-4 font-weight-bold mt-3 text-dark">
+                            API Flask REST
+                        </h1>
+                        <p class="lead text-muted">
+                            Serviço backend em execução e pronto para receber requisições
+                        </p>
+                    </div>
+
+                    <!-- Cards de Informações -->
+                    <div class="row mb-5">
+                        <div class="col-md-4 mb-4">
+                            <div class="feature-card text-center">
+                                <div class="feature-icon">
+                                    <i class="bi bi-clock-history"></i>
+                                </div>
+                                <h5>Última Verificação</h5>
+                                <p class="text-muted">{{ info.timestamp }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="feature-card text-center">
+                                <div class="feature-icon">
+                                    <i class="bi bi-diagram-3"></i>
+                                </div>
+                                <h5>Ambiente</h5>
+                                <p class="text-muted">{{ info.ambiente }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="feature-card text-center">
+                                <div class="feature-icon">
+                                    <i class="bi bi-tag"></i>
+                                </div>
+                                <h5>Versão</h5>
+                                <p class="text-muted">{{ info.versao }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Endpoints Disponíveis -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="feature-card">
+                                <h4 class="mb-4">
+                                    <i class="bi bi-list-check mr-2"></i>
+                                    Endpoints Disponíveis - Testar API
+                                </h4>
+
+                                <!-- Hotéis -->
+                                <div class="endpoint-category">
+                                    <h5><i class="bi bi-building mr-2"></i>Hotéis</h5>
+                                    <ul class="endpoint-list">
+                                        <!-- GET Hotéis -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('get-hoteis')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-get">GET</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Listar Hotéis</strong>
+                                                        <br>
+                                                        <small class="text-muted">/hoteis</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-get-hoteis"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="get-hoteis" onclick="event.stopPropagation()">
+                                                <p class="text-muted">Lista todos os hotéis cadastrados no sistema.</p>
+                                                <button class="btn btn-test btn-sm" onclick="testGetHoteis(event)">
+                                                    <i class="bi bi-play-circle"></i>Executar Teste
+                                                </button>
+                                                <div id="response-get-hoteis" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-get-hoteis"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- GET Hotel -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('get-hotel')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-get">GET</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Buscar Hotel</strong>
+                                                        <br>
+                                                        <small class="text-muted">/hoteis/&lt;hotel_id&gt;</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-get-hotel"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="get-hotel" onclick="event.stopPropagation()">
+                                                <p class="text-muted">Busca um hotel específico pelo ID.</p>
+                                                <form class="test-form" onsubmit="testEndpointWithData('/hoteis/', 'GET', 'get-hotel', event)">
+                                                    <div class="form-group">
+                                                        <label>Hotel ID</label>
+                                                        <input type="text" class="form-control" name="hotel_id" placeholder="Ex: hotel_alpha" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Teste
+                                                    </button>
+                                                </form>
+                                                <div id="response-get-hotel" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-get-hotel"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- POST Hotel -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('post-hotel')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-post">POST</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Criar Hotel</strong>
+                                                        <br>
+                                                        <small class="text-muted">/hoteis/&lt;hotel_id&gt;</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-post-hotel"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="post-hotel" onclick="event.stopPropagation()">
+                                                <div class="auth-notice">
+                                                    <i class="bi bi-shield-lock"></i>
+                                                    <strong>Requer autenticação JWT</strong> - Faça login primeiro para obter o token
+                                                </div>
+                                                <p class="text-muted">Cria um novo hotel no sistema.</p>
+                                                <form class="test-form" onsubmit="testEndpointWithJSONAuth('/hoteis/', 'POST', 'post-hotel', event)">
+                                                    <div class="form-group">
+                                                        <label>Hotel ID</label>
+                                                        <input type="text" class="form-control" name="hotel_id" placeholder="Ex: hotel_alpha" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Nome</label>
+                                                        <input type="text" class="form-control" name="nome" placeholder="Ex: Hotel Alpha" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Estrelas</label>
+                                                        <input type="number" class="form-control" name="estrelas" placeholder="1-5" min="1" max="5" step="0.1" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Diária (R$)</label>
+                                                        <input type="number" step="0.01" class="form-control" name="diaria" placeholder="Ex: 250.00" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Cidade</label>
+                                                        <input type="text" class="form-control" name="cidade" placeholder="Ex: São Paulo" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Site ID</label>
+                                                        <input type="number" class="form-control" name="site_id" placeholder="Ex: 1" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Teste
+                                                    </button>
+                                                </form>
+                                                <div id="response-post-hotel" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-post-hotel"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- PUT Hotel -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('put-hotel')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-put">PUT</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Atualizar Hotel</strong>
+                                                        <br>
+                                                        <small class="text-muted">/hoteis/&lt;hotel_id&gt;</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-put-hotel"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="put-hotel" onclick="event.stopPropagation()">
+                                                <div class="auth-notice">
+                                                    <i class="bi bi-shield-lock"></i>
+                                                    <strong>Requer autenticação JWT</strong> - Faça login primeiro para obter o token
+                                                </div>
+                                                <p class="text-muted">Atualiza os dados de um hotel existente.</p>
+                                                <form class="test-form" onsubmit="testEndpointWithJSONAuth('/hoteis/', 'PUT', 'put-hotel', event)">
+                                                    <div class="form-group">
+                                                        <label>Hotel ID</label>
+                                                        <input type="text" class="form-control" name="hotel_id" placeholder="Ex: hotel_alpha" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Nome</label>
+                                                        <input type="text" class="form-control" name="nome" placeholder="Ex: Hotel Alpha Atualizado">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Estrelas</label>
+                                                        <input type="number" class="form-control" name="estrelas" placeholder="1-5" min="1" max="5" step="0.1">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Diária (R$)</label>
+                                                        <input type="number" step="0.01" class="form-control" name="diaria" placeholder="Ex: 300.00">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Cidade</label>
+                                                        <input type="text" class="form-control" name="cidade" placeholder="Ex: Rio de Janeiro">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Site ID</label>
+                                                        <input type="number" class="form-control" name="site_id" placeholder="Ex: 1">
+                                                    </div>
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Teste
+                                                    </button>
+                                                </form>
+                                                <div id="response-put-hotel" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-put-hotel"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- DELETE Hotel -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('delete-hotel')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-delete">DELETE</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Deletar Hotel</strong>
+                                                        <br>
+                                                        <small class="text-muted">/hoteis/&lt;hotel_id&gt;</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-delete-hotel"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="delete-hotel" onclick="event.stopPropagation()">
+                                                <div class="auth-notice">
+                                                    <i class="bi bi-shield-lock"></i>
+                                                    <strong>Requer autenticação JWT</strong> - Faça login primeiro para obter o token
+                                                </div>
+                                                <p class="text-muted">Remove um hotel do sistema.</p>
+                                                <form class="test-form" onsubmit="testEndpointWithAuth('/hoteis/', 'DELETE', 'delete-hotel', event)">
+                                                    <div class="form-group">
+                                                        <label>Hotel ID</label>
+                                                        <input type="text" class="form-control" name="hotel_id" placeholder="Ex: hotel_alpha" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Teste
+                                                    </button>
+                                                </form>
+                                                <div id="response-delete-hotel" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-delete-hotel"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- Usuários -->
+                                <div class="endpoint-category">
+                                    <h5><i class="bi bi-people mr-2"></i>Usuários</h5>
+                                    <ul class="endpoint-list">
+                                        <!-- GET Usuário -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('get-user')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-get">GET</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Buscar Usuário</strong>
+                                                        <br>
+                                                        <small class="text-muted">/usuarios/&lt;user_id&gt;</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-get-user"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="get-user" onclick="event.stopPropagation()">
+                                                <div class="auth-notice">
+                                                    <i class="bi bi-shield-lock"></i>
+                                                    <strong>Requer autenticação JWT</strong> - Faça login primeiro para obter o token
+                                                </div>
+                                                <p class="text-muted">Busca um usuário específico pelo ID.</p>
+                                                <form class="test-form" onsubmit="testEndpointWithAuth('/usuarios/', 'GET', 'get-user', event)">
+                                                    <div class="form-group">
+                                                        <label>User ID</label>
+                                                        <input type="number" class="form-control" name="user_id" placeholder="Ex: 1" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Teste
+                                                    </button>
+                                                </form>
+                                                <div id="response-get-user" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-get-user"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- DELETE Usuário -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('delete-user')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-delete">DELETE</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Deletar Usuário</strong>
+                                                        <br>
+                                                        <small class="text-muted">/usuarios/&lt;user_id&gt;</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-delete-user"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="delete-user" onclick="event.stopPropagation()">
+                                                <div class="auth-notice">
+                                                    <i class="bi bi-shield-lock"></i>
+                                                    <strong>Requer autenticação JWT</strong> - Faça login primeiro para obter o token
+                                                </div>
+                                                <p class="text-muted">Remove um usuário do sistema.</p>
+                                                <form class="test-form" onsubmit="testEndpointWithAuth('/usuarios/', 'DELETE', 'delete-user', event)">
+                                                    <div class="form-group">
+                                                        <label>User ID</label>
+                                                        <input type="number" class="form-control" name="user_id" placeholder="Ex: 1" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Teste
+                                                    </button>
+                                                </form>
+                                                <div id="response-delete-user" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-delete-user"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- POST Cadastro -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('post-cadastro')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-post">POST</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Cadastrar Usuário</strong>
+                                                        <br>
+                                                        <small class="text-muted">/cadastro</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-post-cadastro"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="post-cadastro" onclick="event.stopPropagation()">
+                                                <p class="text-muted">Cadastra um novo usuário no sistema.</p>
+                                                <form class="test-form" onsubmit="testEndpointWithJSON('/cadastro', 'POST', 'post-cadastro', event)">
+                                                    <div class="form-group">
+                                                        <label>Login</label>
+                                                        <input type="text" class="form-control" name="login" placeholder="Ex: usuario123" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Senha</label>
+                                                        <input type="password" class="form-control" name="senha" placeholder="Sua senha" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Email</label>
+                                                        <input type="email" class="form-control" name="email" placeholder="usuario@email.com" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Teste
+                                                    </button>
+                                                </form>
+                                                <div id="response-post-cadastro" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-post-cadastro"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- POST Login -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('post-login')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-post">POST</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Login</strong>
+                                                        <br>
+                                                        <small class="text-muted">/login</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-post-login"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="post-login" onclick="event.stopPropagation()">
+                                                <p class="text-muted">Realiza login e retorna um token JWT.</p>
+                                                <form class="test-form" onsubmit="testLogin(event)">
+                                                    <div class="form-group">
+                                                        <label>Login</label>
+                                                        <input type="text" class="form-control" name="login" placeholder="Ex: usuario123" required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Senha</label>
+                                                        <input type="password" class="form-control" name="senha" placeholder="Sua senha" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Teste
+                                                    </button>
+                                                </form>
+                                                <div id="response-post-login" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-post-login"></pre>
+                                                </div>
+                                                <div id="token-display-post-login" class="token-display">
+                                                    <button class="copy-token-btn" onclick="copyToken('post-login')">
+                                                        <i class="bi bi-clipboard"></i> Copiar
+                                                    </button>
+                                                    <strong><i class="bi bi-key-fill text-primary"></i> Token Bearer:</strong>
+                                                    <pre id="token-value-post-login"></pre>
+                                                    <div class="auto-fill-notice">
+                                                        <i class="bi bi-check-circle-fill"></i>
+                                                        <strong>Token salvo automaticamente!</strong> Ele será usado nos endpoints que exigem autenticação.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- POST Logout -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('post-logout')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-post">POST</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Logout</strong>
+                                                        <br>
+                                                        <small class="text-muted">/logout</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-post-logout"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="post-logout" onclick="event.stopPropagation()">
+                                                <div class="auth-notice">
+                                                    <i class="bi bi-shield-lock"></i>
+                                                    <strong>Requer autenticação JWT</strong> - Faça login primeiro para obter o token
+                                                </div>
+                                                <p class="text-muted">Realiza logout e invalida o token JWT.</p>
+                                                <div id="token-status-logout"></div>
+                                                <form class="test-form" onsubmit="testLogout(event)">
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Logout
+                                                    </button>
+                                                </form>
+                                                <div id="response-post-logout" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-post-logout"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- GET Confirmação -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('get-confirm')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-get">GET</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Confirmar Email</strong>
+                                                        <br>
+                                                        <small class="text-muted">/confirmacao/&lt;user_id&gt;</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-get-confirm"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="get-confirm" onclick="event.stopPropagation()">
+                                                <p class="text-muted">Confirma o email do usuário.</p>
+                                                <form class="test-form" onsubmit="testEndpointWithData('/confirmacao/', 'GET', 'get-confirm', event)">
+                                                    <div class="form-group">
+                                                        <label>User ID</label>
+                                                        <input type="number" class="form-control" name="user_id" placeholder="Ex: 1" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Teste
+                                                    </button>
+                                                </form>
+                                                <div id="response-get-confirm" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-get-confirm"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!-- Sites -->
+                                <div class="endpoint-category">
+                                    <h5><i class="bi bi-globe mr-2"></i>Sites</h5>
+                                    <ul class="endpoint-list">
+                                        <!-- GET Sites -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('get-sites')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-get">GET</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Listar Sites</strong>
+                                                        <br>
+                                                        <small class="text-muted">/sites</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-get-sites"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="get-sites" onclick="event.stopPropagation()">
+                                                <p class="text-muted">Lista todos os sites cadastrados.</p>
+                                                <button class="btn btn-test btn-sm" onclick="testEndpoint('/sites', 'GET', 'get-sites')">
+                                                    <i class="bi bi-play-circle"></i>Executar Teste
+                                                </button>
+                                                <div id="response-get-sites" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-get-sites"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- POST Site -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('post-site')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-post">POST</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Criar Site</strong>
+                                                        <br>
+                                                        <small class="text-muted">/sites/&lt;url&gt;</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-post-site"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="post-site" onclick="event.stopPropagation()">
+                                                <p class="text-muted">Cadastra um novo site no sistema.</p>
+                                                <form class="test-form" onsubmit="testEndpointWithData('/sites/', 'POST', 'post-site', event)">
+                                                    <div class="form-group">
+                                                        <label>URL</label>
+                                                        <input type="text" class="form-control" name="url" placeholder="Ex: www.example.com" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Teste
+                                                    </button>
+                                                </form>
+                                                <div id="response-post-site" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-post-site"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- GET Site -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('get-site')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-get">GET</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Buscar Site</strong>
+                                                        <br>
+                                                        <small class="text-muted">/sites/&lt;url&gt;</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-get-site"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="get-site" onclick="event.stopPropagation()">
+                                                <p class="text-muted">Busca um site específico pela URL.</p>
+                                                <form class="test-form" onsubmit="testEndpointWithData('/sites/', 'GET', 'get-site', event)">
+                                                    <div class="form-group">
+                                                        <label>URL</label>
+                                                        <input type="text" class="form-control" name="url" placeholder="Ex: www.example.com" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Teste
+                                                    </button>
+                                                </form>
+                                                <div id="response-get-site" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-get-site"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <!-- DELETE Site -->
+                                        <li class="endpoint-item">
+                                            <div class="endpoint-header" onclick="toggleEndpoint('delete-site')">
+                                                <div class="endpoint-info">
+                                                    <span class="method-badge method-delete">DELETE</span>
+                                                    <span class="flex-grow-1">
+                                                        <strong>Deletar Site</strong>
+                                                        <br>
+                                                        <small class="text-muted">/sites/&lt;url&gt;</small>
+                                                    </span>
+                                                </div>
+                                                <i class="bi bi-chevron-down expand-icon" id="icon-delete-site"></i>
+                                            </div>
+                                            <div class="endpoint-details" id="delete-site" onclick="event.stopPropagation()">
+                                                <p class="text-muted">Remove um site do sistema.</p>
+                                                <form class="test-form" onsubmit="testEndpointWithData('/sites/', 'DELETE', 'delete-site', event)">
+                                                    <div class="form-group">
+                                                        <label>URL</label>
+                                                        <input type="text" class="form-control" name="url" placeholder="Ex: www.example.com" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-test btn-sm">
+                                                        <i class="bi bi-play-circle"></i>Executar Teste
+                                                    </button>
+                                                </form>
+                                                <div id="response-delete-site" class="response-box">
+                                                    <strong>Resposta:</strong>
+                                                    <pre id="response-content-delete-site"></pre>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção de Teste Rápido -->
+                <div class="footer-section">
+                    <div class="quick-test-section">
+                        <h5><i class="bi bi-rocket-takeoff mr-2"></i>Teste Rápido da API</h5>
+                        <p class="text-muted mb-3">Verifique rapidamente a conectividade e funcionamento da API</p>
+                        <div class="btn-group" role="group">
+                            <button onclick="testEndpointQuick('/hoteis', 'GET')" class="btn btn-outline-primary">
+                                <i class="bi bi-building mr-2"></i>
+                                Testar Hotéis
+                            </button>
+                            <button onclick="testEndpointQuick('/sites', 'GET')" class="btn btn-outline-secondary">
+                                <i class="bi bi-globe mr-2"></i>
+                                Testar Sites
+                            </button>
+                            <button onclick="testAPIQuick()" class="btn btn-primary">
+                                <i class="bi bi-play-circle mr-2"></i>
+                                Teste Completo
+                            </button>
+                        </div>
+                        <div id="quick-test-result" class="mt-3" style="display: none;">
+                            <div class="alert alert-info">
+                                <strong>Resultado:</strong>
+                                <pre id="quick-test-content" class="mt-2"></pre>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center text-muted">
+                        <p>&copy; 2024 API Flask REST - Documentação Interativa</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Armazenar token JWT
+        let savedToken = null;
+
+        // Função específica para Listar Hotéis
+        async function testGetHoteis(event) {
+            if (event) event.stopPropagation();
+            
+            const responseId = 'response-get-hoteis';
+            const responseContentId = 'response-content-get-hoteis';
+            
+            showLoading(responseId, responseContentId);
+            
+            try {
+                // Primeira tentativa: GET simples
+                let response = await fetch('/hoteis', {
+                    method: 'GET'
+                });
+                
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    data = { error: 'Resposta não é JSON válido', status: response.status };
+                }
+                
+                // Se 415, tenta com Content-Type
+                if (response.status === 415) {
+                    console.log('Tentativa 1 falhou (415), tentando com Content-Type...');
+                    
+                    response = await fetch('/hoteis', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    try {
+                        data = await response.json();
+                    } catch (e) {
+                        data = { error: 'Resposta não é JSON válido', status: response.status };
+                    }
+                }
+                
+                showResponse(responseId, responseContentId, data, response.status);
+            } catch (error) {
+                showError(responseId, responseContentId, error);
+            }
+        }
+
+        // Toggle endpoint details
+        function toggleEndpoint(id) {
+            const details = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            
+            if (details.classList.contains('active')) {
+                details.classList.remove('active');
+                icon.classList.remove('rotated');
+            } else {
+                // Fechar outros detalhes abertos
+                document.querySelectorAll('.endpoint-details.active').forEach(item => {
+                    if (item.id !== id) {
+                        item.classList.remove('active');
+                        const otherIcon = document.getElementById('icon-' + item.id);
+                        if (otherIcon) otherIcon.classList.remove('rotated');
+                    }
+                });
+                
+                details.classList.add('active');
+                icon.classList.add('rotated');
+                
+                // Se for logout, verificar se há token salvo
+                if (id === 'post-logout') {
+                    updateLogoutTokenStatus();
+                }
+            }
+        }
+
+        // Atualizar status do token no logout
+        function updateLogoutTokenStatus() {
+            const statusDiv = document.getElementById('token-status-logout');
+            if (!statusDiv) return;
+            
+            if (savedToken) {
+                statusDiv.innerHTML = `
+                    <div class="alert alert-success alert-custom">
+                        <i class="bi bi-check-circle-fill mr-2"></i>
+                        <strong>Token detectado!</strong> Será usado automaticamente para o logout.
+                    </div>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="alert alert-warning alert-custom">
+                        <i class="bi bi-exclamation-triangle-fill mr-2"></i>
+                        <strong>Nenhum token encontrado.</strong> Faça login primeiro para obter um token.
+                    </div>
+                `;
+            }
+        }
+
+        // Copiar token para clipboard
+        function copyToken(endpointId) {
+            const tokenValue = document.getElementById('token-value-' + endpointId).textContent;
+            navigator.clipboard.writeText(tokenValue).then(() => {
+                const btn = event.target;
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="bi bi-check"></i> Copiado!';
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Test login e salvar token
+        async function testLogin(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            const responseId = 'response-post-login';
+            const responseContentId = 'response-content-post-login';
+            const tokenDisplayId = 'token-display-post-login';
+            const tokenValueId = 'token-value-post-login';
+            
+            showLoading(responseId, responseContentId);
+            document.getElementById(tokenDisplayId).style.display = 'none';
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                let responseData;
+                try {
+                    responseData = await response.json();
+                } catch (e) {
+                    responseData = { error: 'Resposta não é JSON válido', status: response.status };
+                }
+                
+                showResponse(responseId, responseContentId, responseData, response.status);
+                
+                // Se login bem-sucedido, extrair e salvar token
+                if (response.ok && responseData.access_token) {
+                    savedToken = responseData.access_token;
+                    document.getElementById(tokenDisplayId).style.display = 'block';
+                    document.getElementById(tokenValueId).textContent = savedToken;
+                    
+                    // Atualizar status do logout se estiver aberto
+                    updateLogoutTokenStatus();
+                }
+            } catch (error) {
+                showError(responseId, responseContentId, error);
+            }
+        }
+
+        // Test logout com token automático
+        async function testLogout(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const responseId = 'response-post-logout';
+            const responseContentId = 'response-content-post-logout';
+            
+            if (!savedToken) {
+                showError(responseId, responseContentId, new Error('Nenhum token disponível. Faça login primeiro.'));
+                return;
+            }
+            
+            showLoading(responseId, responseContentId);
+            
+            try {
+                const response = await fetch('/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + savedToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                let responseData;
+                try {
+                    responseData = await response.json();
+                } catch (e) {
+                    responseData = { message: 'Logout realizado', status: response.status };
+                }
+                
+                showResponse(responseId, responseContentId, responseData, response.status);
+                
+                // Se logout bem-sucedido, limpar token
+                if (response.ok) {
+                    savedToken = null;
+                    updateLogoutTokenStatus();
+                }
+            } catch (error) {
+                showError(responseId, responseContentId, error);
+            }
+        }
+
+        // Test endpoint simples (GET sem parâmetros)
+        async function testEndpoint(url, method, endpointId) {
+            const responseId = 'response-' + endpointId;
+            const responseContentId = 'response-content-' + endpointId;
+            
+            showLoading(responseId, responseContentId);
+            
+            try {
+                const config = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (method !== 'GET' && method !== 'HEAD') {
+                    config.body = JSON.stringify({});
+                }
+                
+                const response = await fetch(url, config);
+                
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    data = { error: 'Resposta não é JSON válido', status: response.status };
+                }
+                showResponse(responseId, responseContentId, data, response.status);
+            } catch (error) {
+                showError(responseId, responseContentId, error);
+            }
+        }
+
+        // Test endpoint com parâmetro na URL
+        async function testEndpointWithData(baseUrl, method, endpointId, event) {
+            if (event) event.preventDefault();
+            
+            const form = event ? event.target : null;
+            let paramValue;
+            
+            if (form) {
+                const formData = new FormData(form);
+                const params = Object.fromEntries(formData);
+                paramValue = params[Object.keys(params)[0]];
+            }
+            
+            const url = baseUrl + encodeURIComponent(paramValue);
+            const responseId = 'response-' + endpointId;
+            const responseContentId = 'response-content-' + endpointId;
+            
+            showLoading(responseId, responseContentId);
+            
+            try {
+                const config = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (method !== 'GET' && method !== 'HEAD') {
+                    config.body = JSON.stringify({});
+                }
+                
+                const response = await fetch(url, config);
+                
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    data = { error: 'Resposta não é JSON válido', status: response.status };
+                }
+                showResponse(responseId, responseContentId, data, response.status);
+            } catch (error) {
+                showError(responseId, responseContentId, error);
+            }
+        }
+
+        // Test endpoint com JSON body
+        async function testEndpointWithJSON(url, method, endpointId, event) {
+            if (event) event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            const responseId = 'response-' + endpointId;
+            const responseContentId = 'response-content-' + endpointId;
+            
+            showLoading(responseId, responseContentId);
+            
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                let responseData;
+                try {
+                    responseData = await response.json();
+                } catch (e) {
+                    responseData = { error: 'Resposta não é JSON válido', status: response.status };
+                }
+                
+                showResponse(responseId, responseContentId, responseData, response.status);
+            } catch (error) {
+                showError(responseId, responseContentId, error);
+            }
+        }
+
+        // Test endpoint com JSON body e autenticação JWT
+        async function testEndpointWithJSONAuth(baseUrl, method, endpointId, event) {
+            if (event) event.preventDefault();
+            
+            if (!savedToken) {
+                const responseId = 'response-' + endpointId;
+                const responseContentId = 'response-content-' + endpointId;
+                showError(responseId, responseContentId, new Error('Nenhum token disponível. Faça login primeiro.'));
+                return;
+            }
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            const resourceId = data.hotel_id;
+            delete data.hotel_id;
+            
+            // Convert numeric fields
+            if (data.estrelas) data.estrelas = parseFloat(data.estrelas);
+            if (data.diaria) data.diaria = parseFloat(data.diaria);
+            if (data.site_id) data.site_id = parseInt(data.site_id);
+            
+            // Remove empty fields for PUT requests
+            if (method === 'PUT') {
+                Object.keys(data).forEach(key => {
+                    if (data[key] === '' || data[key] === null) {
+                        delete data[key];
+                    }
+                });
+            }
+            
+            const url = baseUrl + resourceId;
+            const responseId = 'response-' + endpointId;
+            const responseContentId = 'response-content-' + endpointId;
+            
+            showLoading(responseId, responseContentId);
+            
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + savedToken
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                let responseData;
+                try {
+                    responseData = await response.json();
+                } catch (e) {
+                    responseData = { error: 'Resposta não é JSON válido', status: response.status };
+                }
+                
+                showResponse(responseId, responseContentId, responseData, response.status);
+            } catch (error) {
+                showError(responseId, responseContentId, error);
+            }
+        }
+
+        // Test endpoint com autenticação JWT (sem body)
+        async function testEndpointWithAuth(baseUrl, method, endpointId, event) {
+            if (event) event.preventDefault();
+            
+            if (!savedToken) {
+                const responseId = 'response-' + endpointId;
+                const responseContentId = 'response-content-' + endpointId;
+                showError(responseId, responseContentId, new Error('Nenhum token disponível. Faça login primeiro.'));
+                return;
+            }
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const params = Object.fromEntries(formData);
+            const paramValue = params[Object.keys(params)[0]];
+            const url = baseUrl + encodeURIComponent(paramValue);
+            
+            const responseId = 'response-' + endpointId;
+            const responseContentId = 'response-content-' + endpointId;
+            
+            showLoading(responseId, responseContentId);
+            
+            try {
+                const config = {
+                    method: method,
+                    headers: {
+                        'Authorization': 'Bearer ' + savedToken,
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (method !== 'GET' && method !== 'HEAD') {
+                    config.body = JSON.stringify({});
+                }
+                
+                const response = await fetch(url, config);
+                
+                let responseData;
+                try {
+                    responseData = await response.json();
+                } catch (e) {
+                    responseData = { error: 'Resposta não é JSON válido', status: response.status };
+                }
+                
+                showResponse(responseId, responseContentId, responseData, response.status);
+            } catch (error) {
+                showError(responseId, responseContentId, error);
+            }
+        }
+
+        // Teste rápido de endpoint
+        async function testEndpointQuick(url, method) {
+            const resultDiv = document.getElementById('quick-test-result');
+            const contentDiv = document.getElementById('quick-test-content');
+            
+            resultDiv.style.display = 'block';
+            contentDiv.innerHTML = '<i class="bi bi-arrow-repeat spinner"></i> Testando...';
+            
+            try {
+                let response = await fetch(url, { method: 'GET' });
+                
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    data = { error: 'Resposta não é JSON válido', status: response.status };
+                }
+                
+                if (response.status === 415) {
+                    console.log('Tentando com Content-Type...');
+                    response = await fetch(url, {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    
+                    try {
+                        data = await response.json();
+                    } catch (e) {
+                        data = { error: 'Resposta não é JSON válido', status: response.status };
+                    }
+                }
+                
+                contentDiv.innerHTML = `Status: ${response.status}\n\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                contentDiv.innerHTML = `Erro: ${error.message}`;
+            }
+        }
+
+        // Teste simples da API
+        async function testAPIQuick() {
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            
+            btn.innerHTML = '<i class="bi bi-arrow-repeat spinner mr-2"></i>Testando...';
+            btn.disabled = true;
+            
+            try {
+                let response = await fetch('/hoteis', { method: 'GET' });
+                
+                if (response.status === 415) {
+                    response = await fetch('/hoteis', {
+                        method: 'GET',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }
+                
+                if (response.ok) {
+                    btn.innerHTML = '<i class="bi bi-check-circle mr-2"></i>API Online!';
+                    btn.className = 'btn btn-success';
+                } else {
+                    throw new Error('Erro na resposta: ' + response.status);
+                }
+            } catch (error) {
+                btn.innerHTML = '<i class="bi bi-x-circle mr-2"></i>Erro no Teste';
+                btn.className = 'btn btn-danger';
+            }
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.className = 'btn btn-primary';
+                btn.disabled = false;
+            }, 3000);
+        }
+
+        // Funções auxiliares
+        function showLoading(responseId, responseContentId) {
+            const responseBox = document.getElementById(responseId);
+            const responseContent = document.getElementById(responseContentId);
+            responseBox.style.display = 'block';
+            responseContent.innerHTML = '<i class="bi bi-arrow-repeat spinner"></i> Carregando...';
+        }
+
+        function showResponse(responseId, responseContentId, data, status) {
+            const responseBox = document.getElementById(responseId);
+            const responseContent = document.getElementById(responseContentId);
+            
+            responseBox.style.display = 'block';
+            responseBox.className = 'response-box';
+            
+            if (status >= 200 && status < 300) {
+                responseBox.classList.add('alert-success');
+            } else if (status >= 400 && status < 500) {
+                responseBox.classList.add('alert-warning');
+            } else if (status >= 500) {
+                responseBox.classList.add('alert-danger');
+            }
+            
+            responseContent.innerHTML = `<strong>Status:</strong> ${status}\n\n${JSON.stringify(data, null, 2)}`;
+        }
+
+        function showError(responseId, responseContentId, error) {
+            const responseBox = document.getElementById(responseId);
+            const responseContent = document.getElementById(responseContentId);
+            
+            responseBox.style.display = 'block';
+            responseBox.className = 'response-box alert-danger';
+            responseContent.innerHTML = `<strong>Erro:</strong>\n${error.message}`;
+        }
+
+        // Floating shapes animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const shapes = document.querySelectorAll('.shape');
+            shapes.forEach(shape => {
+                shape.style.animation = `float ${6 + Math.random() * 4}s ease-in-out infinite ${Math.random() * 2}s`;
+            });
+        });
+    </script>
+</body>
+</html>

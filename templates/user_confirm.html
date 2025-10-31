@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Confirmado - Cadastro Ativado</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+      :root {
+        --primary-color: #667eea;
+        --secondary-color: #764ba2;
+        --success-color: #28a745;
+      }
+      
+      body {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      
+      .confirmation-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        padding: 2.5rem;
+        max-width: 500px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .confirmation-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      }
+      
+      .success-icon {
+        font-size: 4rem;
+        color: var(--success-color);
+        margin-bottom: 1rem;
+        position: relative;
+      }
+      
+      .success-icon svg {
+        filter: drop-shadow(0 4px 8px rgba(40, 167, 69, 0.3));
+      }
+      
+      .checkmark-circle {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 2;
+        stroke-miterlimit: 10;
+        stroke: var(--success-color);
+        fill: none;
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+      }
+      
+      .checkmark {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: block;
+        stroke-width: 2;
+        stroke: #fff;
+        stroke-miterlimit: 10;
+        margin: 0 auto;
+        box-shadow: inset 0px 0px 0px var(--success-color);
+        animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+      }
+      
+      .checkmark-check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+      }
+      
+      @keyframes stroke {
+        100% {
+          stroke-dashoffset: 0;
+        }
+      }
+      
+      @keyframes scale {
+        0%, 100% {
+          transform: none;
+        }
+        50% {
+          transform: scale3d(1.1, 1.1, 1);
+        }
+      }
+      
+      @keyframes fill {
+        100% {
+          box-shadow: inset 0px 0px 0px 30px var(--success-color);
+        }
+      }
+      
+      .user-info {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1.5rem 0;
+        border-left: 4px solid var(--primary-color);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      
+      .user-info:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      }
+      
+      .info-icon {
+        color: var(--primary-color);
+        margin-right: 8px;
+        animation: bounce 2s infinite;
+      }
+      
+      @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-5px);
+        }
+        60% {
+          transform: translateY(-3px);
+        }
+      }
+      
+      .btn-continue {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .btn-continue::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: 0.5s;
+      }
+      
+      .btn-continue:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      }
+      
+      .btn-continue:hover::before {
+        left: 100%;
+      }
+      
+      .btn-icon {
+        margin-right: 8px;
+        transition: transform 0.3s ease;
+      }
+      
+      .btn-continue:hover .btn-icon {
+        transform: translateX(3px);
+      }
+      
+      .footer-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 2rem;
+      }
+      
+      .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: var(--primary-color);
+        opacity: 0;
+      }
+      
+      @keyframes confetti-fall {
+        0% {
+          transform: translateY(-100px) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+      
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+      
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="confirmation-card text-center animate__animated animate__fadeIn">
+        <!-- Ícone de sucesso animado -->
+        <div class="success-icon">
+          <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+            <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
+        </div>
+        
+        <h1 class="h2 font-weight-bold text-success mb-3 animate__animated animate__fadeInUp">Email Confirmado!</h1>
+        
+        <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-1s">Seu cadastro foi ativado com sucesso. Agora você tem acesso completo à nossa plataforma.</p>
+        
+        <!-- Informações do usuário -->
+        <div class="user-info text-left animate__animated animate__fadeInUp animate__delay-1s">
+          <div class="row">
+            <div class="col-12 mb-2">
+              <strong><i class="bi bi-envelope info-icon"></i>Email confirmado:</strong>
+              <p class="mb-2 text-primary">{{ email }}</p>
+            </div>
+            <div class="col-12">
+              <strong><i class="bi bi-person info-icon"></i>Usuário:</strong>
+              <p class="mb-0 text-primary">{{ usuario }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botão de ação -->
+        <div class="mt-4 animate__animated animate__fadeInUp animate__delay-2s">
+          <a href="/login" class="btn btn-continue pulse">
+            <i class="bi bi-box-arrow-in-right btn-icon"></i>
+            Fazer Login
+          </a>
+        </div>
+
+        <!-- Informações adicionais -->
+        <div class="footer-text animate__animated animate__fadeIn animate__delay-2s">
+          <p class="mb-0">
+            Se você tiver alguma dúvida, entre em contato com nosso suporte.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    
+    <!-- Scripts Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    <script>
+      // Função para criar efeito de confete
+      function createConfetti() {
+        const colors = ['#667eea', '#764ba2', '#28a745', '#ffc107', '#dc3545'];
+        const container = document.querySelector('.confirmation-card');
+        
+        for (let i = 0; i < 20; i++) {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.left = Math.random() * 100 + '%';
+          confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
+          confetti.style.animationDelay = Math.random() * 2 + 's';
+          container.appendChild(confetti);
+        }
+      }
+      
+      // Executar quando a página carregar
+      document.addEventListener('DOMContentLoaded', function() {
+        createConfetti();
+        
+        // Adicionar animação de digitação no texto do usuário
+        const userInfo = document.querySelector('.user-info');
+        setTimeout(() => {
+          userInfo.classList.add('animate__animated', 'animate__pulse');
+        }, 2500);
+      });
+    </script>
+  </body>
+</html>
